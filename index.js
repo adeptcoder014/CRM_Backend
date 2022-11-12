@@ -12,6 +12,10 @@ app.get('/', (req,res)=>{
     res.send("<h1> CRM Server </h1>")
 })
 
+app.get('/login', (req,res)=>{
+    res.send("<h1> Login APIS for registration </h1>")
+})
+
 app.listen(process.env.PORT, ()=>{
     console.log(`Server started on PORT : ${process.env.PORT}`)
 })
