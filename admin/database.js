@@ -10,5 +10,5 @@ mongoose
     useUnifiedTopology: true,
   })
   .then(() => {
-    console.log(`${process.env.DB_URL} Database Connected `);
+    console.log(`Database Connected `);
   });
