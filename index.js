@@ -3,9 +3,11 @@ const app = express()
 const cors = require('cors')
 require('dotenv').config()
 require('./database')
+const bodyParser = require("body-parser")
 const register = require("./routes/register")
 const user = require("./routes/user")
 //====================================================
+app.use(bodyParser.urlencoded({extended:true}))
 app.use(cors())
 app.use(express.json())
 //====================================================
