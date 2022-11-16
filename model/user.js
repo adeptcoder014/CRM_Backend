@@ -1,34 +1,38 @@
 const mongoose = require("mongoose");
 //===================================
-const userSchema = mongoose.Schema({
+const userSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: true,
+    // required: true,
     max: 150,
   },
   email: {
     type: String,
-    required: true,
+    // required: true,
   },
-  // dob: {
-  //   type: String,
-  //   required: true,
-  // },
+  dob: {
+    type: String,
+    // required: true,
+  },
   phone: {
     type: Number,
-    required: true,
+    // required: true,
     min: 10,
   },
   // idPhoto: {
   //   data: Buffer,
   //   contentType: String,
+  //   // required: true,
+
   // },
-  // photo: {
-  //   data: Buffer,
-  //   contentType: String,
-  // },
+  photo: {
+    // data: Buffer,
+    type: String,
+    // required: true,
+  },
   roomPreference: {
     type: String,
+    // required: true,
   },
 });
 
