@@ -8,17 +8,24 @@ const registerSchema = joi.object({
   name: joi.string().required(),
   email: joi.string().required(),
   phone: joi.number().required(),
-  // dob: joi.date().required(),
-  // idPhoto: joi.binary().required(),
-  // photo: joi.binary().required(),
+  dob: joi.date().required(),
+  // photo: joi.string().required(),
   roomPreference: joi.string().required(),
 });
 //==================== Registering a user ===========================================
 //-------------------------------------
 module.exports = {
   post: async (req, res) => {
-    console.log("Payload --->", req.file);
-    // return
+    // console.log("Payload --->", req.file);
+    const emailExists = await userModel.findOne({
+      email: req.body.email,
+    });
+
+    // console.log("user came through the email --->", emailExists);
+    if (emailExists?.email === req.body.email) {
+      res.status(406).send("Email already registered");
+      return;
+    }
     try {
       const user = new userModel({
         name: req.body.name,
@@ -30,11 +37,26 @@ module.exports = {
       if (req.file) {
         user.photo = req.file.path;
       }
-      await user.save();
-      res.status(201).json({
-        status: "Done 😊",
-        user,
-      });
+      const { error } = await registerSchema.validateAsync(req.body);
+      if (error) {
+        // res.status(400).send(error.details[0].message);
+        res.status(400).send(":: Error Hai ::",error);
+
+        return;
+      }
+      if(req.body.phone.length <10 || req.body.phone.length >10){
+        res.status(400).send("Invalid Phone number",);
+
+        return;
+      } 
+      else {
+        await user.save();
+        res.status(201).json({
+          status: "Done 😊",
+          user,
+        });
+      }
+    
     } catch (err) {
       res.status(500).json(err);
     }
