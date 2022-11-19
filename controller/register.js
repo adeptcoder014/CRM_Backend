@@ -12,8 +12,7 @@ const registerSchema = joi.object({
   // photo: joi.string().required(),
   roomPreference: joi.string().required(),
 });
-//==================== Registering a user ===========================================
-//-------------------------------------
+//==================== POST ===========================================
 module.exports = {
   post: async (req, res) => {
     // console.log("Payload --->", req.file);
@@ -21,7 +20,6 @@ module.exports = {
       email: req.body.email,
     });
 
-    // console.log("user came through the email --->", emailExists);
     if (emailExists?.email === req.body.email) {
       res.status(406).send("Email already registered");
       return;

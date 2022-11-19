@@ -3,22 +3,16 @@ const mongoose = require("mongoose");
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
-    // required: true,
     max: 150,
   },
   email: {
     type: String,
-    // required: true,
   },
   dob: {
     type: String,
-    // required: true,
   },
   phone: {
     type: Number,
-    // required: true,
-    // min: 10,
-    // max: 10,
   },
   // idPhoto: {
   //   data: Buffer,
@@ -32,7 +26,21 @@ const userSchema = new mongoose.Schema({
   },
   roomPreference: {
     type: String,
-    // required: true,
+  },
+  room: {
+    type: Number,
+  },
+  meterReading: {
+    type: Number,
+  },
+  discount: {
+    type: Number,
+  },
+  security: {
+    type: Boolean,
+  },
+  remark: {
+    type: String,
   },
 });
 

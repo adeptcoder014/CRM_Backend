@@ -20,15 +20,14 @@ app.use(
   );
   
 //====================================================
-// app.get('/', (req,res)=>{
-
-//     res.send("<h1> CRM Server </h1>")
-// })
-
+app.get('/', (req,res)=>{
+    res.send("<h1> CRM Server </h1>")
+})
+//===================================================
 app.use("/register", register)
 app.use("/user", user)
 app.use('/uploads',express.static('uploads'))
-
+//===================================================
 app.listen(process.env.PORT, ()=>{
     console.log(`Server started on PORT : ${process.env.PORT}`)
 })
