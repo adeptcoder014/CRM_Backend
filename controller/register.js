@@ -35,28 +35,27 @@ module.exports = {
         roomPreference: req.body.roomPreference,
       });
       if (req.file) {
-        user.photo = req.file.path;
+        photo = req.file.path;
+          
       }
       const { error } = await registerSchema.validateAsync(req.body);
       if (error) {
         // res.status(400).send(error.details[0].message);
-        res.status(400).send(":: Error Hai ::",error);
+        res.status(400).send(":: Error Hai ::", error);
 
         return;
       }
-      if(req.body.phone.length <10 || req.body.phone.length >10){
-        res.status(400).send("Invalid Phone number",);
+      if (req.body.phone.length < 10 || req.body.phone.length > 10) {
+        res.status(400).send("Invalid Phone number");
 
         return;
-      } 
-      else {
+      } else {
         await user.save();
         res.status(201).json({
           status: "Done 😊",
           user,
         });
       }
-    
     } catch (err) {
       res.status(500).json(err);
     }

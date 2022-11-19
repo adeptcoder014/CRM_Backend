@@ -27,9 +27,8 @@ const userSchema = new mongoose.Schema({
 
   // },
   photo: {
-    // data: Buffer,
-    type: String,
-    // required: true,
+    data: Buffer,
+    contentType: String,
   },
   roomPreference: {
     type: String,
