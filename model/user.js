@@ -37,10 +37,20 @@ const userSchema = new mongoose.Schema({
     type: Number,
   },
   security: {
-    type: Boolean,
+    type: Number,
   },
   remark: {
     type: String,
+  },
+  zodiac: {},
+  registeredDate: {
+    type: Date,
+    default: Date.now,
+  },
+  status: {
+    type: String,
+    enum: ["NEW", "REGISTERED"],
+    default: "NEW",
   },
 });
 
