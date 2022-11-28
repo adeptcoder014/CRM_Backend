@@ -6,6 +6,7 @@ require('./database')
 const bodyParser = require("body-parser")
 const register = require("./routes/register")
 const user = require("./routes/user")
+const rent = require("./routes/rent")
 //====================================================
 app.use(
     cors({
@@ -26,6 +27,7 @@ app.get('/', (req,res)=>{
 //===================================================
 app.use("/register", register)
 app.use("/user", user)
+app.use("/rent", rent)
 app.use('/uploads',express.static('uploads'))
 //===================================================
 app.listen(process.env.PORT, ()=>{

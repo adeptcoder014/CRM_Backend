@@ -31,6 +31,8 @@ module.exports = {
         dob: req.body.dob,
         phone: req.body.phone,
         roomPreference: req.body.roomPreference,
+        status: "NEW",
+
       });
       if (req.file) {
         photo = req.file.path;
@@ -59,54 +61,3 @@ module.exports = {
     }
   },
 };
-
-// const userModel = require("../model/user");
-
-// module.exports = {
-//   post: async (req, res) => {
-//     try {
-//       console.log("Payload ----", req.body);
-//       const user = new userModel(req.body);
-//       await user.save();
-//       res.status(201).json({
-//         status: "Done 😊",
-//         user,
-//       });
-//     } catch (err) {
-//       res.status(500).json({
-//         status: "Didn't post 😔",
-//         message: err.message,
-//       });
-//     }
-//   },
-//   patch: async (req, res) => {
-//     try {
-//       const data = await userModel.findByIdAndUpdate(req.params.id, req.body);
-
-//       res.status(200).json({
-//         status: "Updated 😊",
-//         data,
-//       });
-//     } catch (err) {
-//       res.status(500).json({
-//         status: "Didn't updated 😔",
-//         message: err.message,
-//       });
-//     }
-//   },
-//   delete: async (req, res) => {
-//     try {
-//       await userModel.findByIdAndDelete(req.params.id);
-
-//       res.status(202).json({
-//         status: "Deleted  😊",
-//         data: {},
-//       });
-//     } catch (err) {
-//       res.status(500).json({
-//         status: "Didn't deleted  😔",
-//         message: err.message,
-//       });
-//     }
-//   },
-// };
