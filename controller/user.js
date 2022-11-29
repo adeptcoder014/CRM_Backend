@@ -58,7 +58,11 @@ module.exports = {
       name: userById.name,
       dob: userById.dob,
       email: userById.email,
+      room: userById.room,
+      remark: userById.remark,
       phone: userById.phone,
+      registeredDate: userById.registeredDate,
+      meterReading:userById.meterReading,
       roomPreference: userById.roomPreference,
       zodiac: zodiac.getSignByDate({
         day: userById.dob.split("-")[2],

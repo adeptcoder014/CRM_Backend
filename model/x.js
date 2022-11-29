@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 //================================
 
-const rentSchema = new mongoose.Schema({
+const x = new mongoose.Schema({
   doubble: {
     type: Number,
   },
@@ -13,6 +13,6 @@ const rentSchema = new mongoose.Schema({
   },
 });
 
-const model = mongoose.model("rent", rentSchema);
+const model = mongoose.model("x", x);
 
 module.exports = model;

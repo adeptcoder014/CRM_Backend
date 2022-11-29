@@ -28,6 +28,7 @@ app.get('/', (req,res)=>{
 app.use("/register", register)
 app.use("/user", user)
 app.use("/rent", rent)
+app.use("/x", require("./routes/x"))
 app.use('/uploads',express.static('uploads'))
 //===================================================
 app.listen(process.env.PORT, ()=>{
