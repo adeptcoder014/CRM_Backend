@@ -1,6 +1,6 @@
 const bycrypt = require("bcrypt");
 const joi = require("@hapi/joi");
-const userModel = require("../model/user");
+const model = require("../model/user");
 const multer = require("multer");
 
 //========================================
@@ -16,7 +16,7 @@ const registerSchema = joi.object({
 module.exports = {
   post: async (req, res) => {
     // console.log("Payload --->", req.file);
-    const emailExists = await userModel.findOne({
+    const emailExists = await model.findOne({
       email: req.body.email,
     });
 
@@ -25,7 +25,7 @@ module.exports = {
       return;
     }
     try {
-      const user = new userModel({
+      const user = new model({
         name: req.body.name,
         email: req.body.email,
         dob: req.body.dob,
