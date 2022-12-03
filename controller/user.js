@@ -4,7 +4,6 @@ const zodiac = require("zodiac-signs")("en");
 module.exports = {
   //===============  GET_ALL ====================================
   getUser: async (req, res) => {
-    // console.log("---♋---> ", req.body);
 
     try {
       const user = await model.find();
