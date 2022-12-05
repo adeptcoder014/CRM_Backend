@@ -24,6 +24,7 @@ module.exports = {
       res.status(406).send("Email already registered");
       return;
     }
+    // console.log("<<-==================>", req.file)
     try {
       const user = new model({
         name: req.body.name,
@@ -31,13 +32,17 @@ module.exports = {
         dob: req.body.dob,
         phone: req.body.phone,
         roomPreference: req.body.roomPreference,
+        // photo:{
+        //   data:req.file.filename,
+        //   contentType:req.file.mimetype
+        // },
+        photo: req.file.path,
         status: "NEW",
-
       });
-      if (req.file) {
-        photo = req.file.path;
-          
-      }
+      // if (req.file) {
+      //   photo = req.file.path;
+      //   // console.log("<<------->>",req.file);
+      // }
       const { error } = await registerSchema.validateAsync(req.body);
       if (error) {
         // res.status(400).send(error.details[0].message);

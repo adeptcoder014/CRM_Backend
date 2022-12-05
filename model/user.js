@@ -20,9 +20,12 @@ const userSchema = new mongoose.Schema({
   //   // required: true,
 
   // },
-  photo: {
-    data: Buffer,
-    contentType: String,
+  // photo: {
+  //   data: Buffer,
+  //   contentType: String,
+  // },
+    photo: {
+    type: String,
   },
   roomPreference: {
     type: String,
