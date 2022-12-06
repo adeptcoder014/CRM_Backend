@@ -4,7 +4,6 @@ const zodiac = require("zodiac-signs")("en");
 module.exports = {
   //===============  GET_ALL ====================================
   getUser: async (req, res) => {
-    
     try {
       const user = await model.find();
       res.status(200).json({
@@ -62,7 +61,9 @@ module.exports = {
       registeredDate: userById.registeredDate,
       roomPreference: userById.roomPreference,
       photo: userById.photo,
-
+      status: userById.status,
+      room: userById.room,
+      
       zodiac: zodiac.getSignByDate({
         day: userById.dob.split("-")[2],
         month: userById.dob.split("-")[1],
