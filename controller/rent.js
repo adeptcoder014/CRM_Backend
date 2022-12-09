@@ -1,4 +1,5 @@
 const model = require("../model/rent");
+const axios = require("axios");
 ///==============================
 
 module.exports = {
@@ -49,5 +50,18 @@ module.exports = {
         message: err.message,
       });
     }
+  },
+  //=================== GET_RENTAL_STRUCTURE ====================================
+  getRentStructure: async (req, res) => {
+    console.log("----->", req.query.date)
+
+    axios.get("http://localhost:5000/rent").then((ress) => {
+      let perDayRent = ress.data.data[0].rentPerDay;
+      const days = 30 - req.query.date.split("-")[2];
+      //-----------------------------------
+      res.json({
+        dues: perDayRent * days, // <------ sending it from the Backend
+      });
+    });
   },
 };

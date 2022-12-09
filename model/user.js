@@ -14,17 +14,7 @@ const userSchema = new mongoose.Schema({
   phone: {
     type: Number,
   },
-  // idPhoto: {
-  //   data: Buffer,
-  //   contentType: String,
-  //   // required: true,
-
-  // },
-  // photo: {
-  //   data: Buffer,
-  //   contentType: String,
-  // },
-    photo: {
+  photo: {
     type: String,
   },
   roomPreference: {
@@ -34,9 +24,6 @@ const userSchema = new mongoose.Schema({
     type: Number,
   },
   meterReading: {
-    type: Number,
-  },
-  discount: {
     type: Number,
   },
   security: {
@@ -50,10 +37,36 @@ const userSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  joiningDate: {
+    type: Date,
+    default: Date.now,
+  },
   status: {
     type: String,
     enum: ["NEW", "REGISTERED"],
     default: "NEW",
+  },
+  // dues: {
+  //   type: new mongoose.Schema({
+  //     rent: {
+  //       type: String,
+  //     },
+  //     eBills: {
+  //       type: String,
+  //     },
+  //     misc: {
+  //       type: String,
+  //     },
+  //   }),
+  // },
+  dues: {
+    type: Number,
+  },
+  eBills: {
+    type: Number,
+  },
+  misc: {
+    type: Number,
   },
 });
 

@@ -1,6 +1,6 @@
 const model = require("../model/user");
 const zodiac = require("zodiac-signs")("en");
-
+const axios = require("axios");
 module.exports = {
   //===============  GET_ALL ====================================
   getUser: async (req, res) => {
@@ -46,29 +46,59 @@ module.exports = {
   getById: async (req, res) => {
     const userById = await model.findById(req.params.id);
 
+    axios.get("http://localhost:5000/rent").then((ress) => {
+      let perDayRent = ress.data.data[0].rentPerDay;
+      const days = 30 - userById.registeredDate.toString().split(" ")[2];
+      //-----------------------------------
+      res.json({
+        name: userById.name,
+        dob: userById.dob,
+        email: userById.email,
+        remark: userById.remark,
+        phone: userById.phone,
+        security: userById.security,
+        meterReading: userById.meterReading,
+        room: userById.room,
+        eBills: userById.eBills,
+        misc: userById.misc,
+        registeredDate: userById.registeredDate,
+        joiningDate: userById.joiningDate,
+
+        roomPreference: userById.roomPreference,
+        photo: userById.photo,
+        status: userById.status,
+        dues: userById.dues,
+        zodiac: zodiac.getSignByDate({
+          day: userById.dob.split("-")[2],
+          month: userById.dob.split("-")[1],
+        }),
+      });
+    });
+
     if (!userById) {
       return res.status(404).json({
         message: "Document not found !",
       });
     }
 
-    res.json({
-      name: userById.name,
-      dob: userById.dob,
-      email: userById.email,
-      remark: userById.remark,
-      phone: userById.phone,
-      registeredDate: userById.registeredDate,
-      roomPreference: userById.roomPreference,
-      photo: userById.photo,
-      status: userById.status,
-      room: userById.room,
-      
-      zodiac: zodiac.getSignByDate({
-        day: userById.dob.split("-")[2],
-        month: userById.dob.split("-")[1],
-      }),
-    });
+    // res.json({
+    //   name: userById.name,
+    //   dob: userById.dob,
+    //   email: userById.email,
+    //   remark: userById.remark,
+    //   phone: userById.phone,
+    //   registeredDate: userById.registeredDate,
+    //   roomPreference: userById.roomPreference,
+    //   photo: userById.photo,
+    //   status: userById.status,
+    //   room: userById.room,
+    //   dues: 5555,
+
+    //   zodiac: zodiac.getSignByDate({
+    //     day: userById.dob.split("-")[2],
+    //     month: userById.dob.split("-")[1],
+    //   }),
+    // });
   },
   //=================== PATCH ====================================
   patchUser: async (req, res) => {
@@ -84,9 +114,18 @@ module.exports = {
       dob: req.body.dob,
       phone: req.body.phone,
       roomPreference: req.body.roomPreference,
+      registeredDate: req.body.registeredDate,
+      joiningDate: req.body.joiningDate,
+
       discount: req.body.discount,
       meterReading: req.body.meterReading,
       room: req.body.room,
+      dues: req.body.dues,
+      eBills: req.body.eBills,
+
+      misc: req.body.misc,
+
+      remark: req.body.remark,
       security: req.body.security,
       status: "REGISTERED",
     };
