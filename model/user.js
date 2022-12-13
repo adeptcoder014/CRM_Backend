@@ -46,24 +46,27 @@ const userSchema = new mongoose.Schema({
     enum: ["NEW", "REGISTERED"],
     default: "NEW",
   },
-  // dues: {
-  //   type: new mongoose.Schema({
-  //     rent: {
-  //       type: String,
-  //     },
-  //     eBills: {
-  //       type: String,
-  //     },
-  //     misc: {
-  //       type: String,
-  //     },
-  //   }),
-  // },
   dues: {
-    type: Number,
-  },
-  eBills: {
-    type: Number,
+    rents: [
+      {
+        type: new mongoose.Schema({
+          year: Number,
+          month: String,
+          status: String,
+          rent: Number,
+          rentCycle: Number,
+        }),
+      },
+    ],
+    eBills: [
+      {
+        type: new mongoose.Schema({
+          reading: Number,
+          pricePerUnit: Number,
+          total: Number,
+        }),
+      },
+    ],
   },
   misc: {
     type: Number,

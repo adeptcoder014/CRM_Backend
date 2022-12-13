@@ -6,6 +6,8 @@ router.post("/", controller.getFilteredUser);
 router.get("/list",controller.getUser);
 router.get("/:id", controller.getById);
 router.patch("/approval/:id", controller.patchUser);
+router.post("/rent/:id", controller.postRent);
+
 router.delete("/:id", controller.deleteUser);
 //---------------------------------------------------
 module.exports = router;

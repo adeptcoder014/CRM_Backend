@@ -48,7 +48,7 @@ module.exports = {
 
     axios.get("http://localhost:5000/rent").then((ress) => {
       let perDayRent = ress.data.data[0].rentPerDay;
-      const days = 30 - userById.registeredDate.toString().split(" ")[2];
+      // const days = 30 - userById.registeredDate.toString().split(" ")[2];
       //-----------------------------------
       res.json({
         name: userById.name,
@@ -59,8 +59,7 @@ module.exports = {
         security: userById.security,
         meterReading: userById.meterReading,
         room: userById.room,
-        eBills: userById.eBills,
-        misc: userById.misc,
+
         registeredDate: userById.registeredDate,
         joiningDate: userById.joiningDate,
 
@@ -102,11 +101,6 @@ module.exports = {
   },
   //=================== PATCH ====================================
   patchUser: async (req, res) => {
-    console.log(
-      "---------------------------------------------------",
-      req.body
-    );
-
     const id = req.params.id;
     const newBody = {
       name: req.body.name,
@@ -143,6 +137,59 @@ module.exports = {
       });
     }
   },
+  //=================== DELETE ====================================
+  postRent: async (req, res) => {
+    console.log(
+      "---------------------------------------------------",
+      req.body
+    );
+    const user = await model.findById(req.params.id);
+    const month = req.body.month;
+    const year = req.body.year;
+    const rent = req.body.rent;
+
+    const rentCycle = req.body.rentCycle;
+    //------------------------------------------
+
+    let newStatus = "";
+
+    if (rent < rentCycle) {
+      newStatus = "DUE";
+    } else if (rent === rentCycle) {
+      newStatus = "PAID";
+    }else{
+      newStatus = "in-house DUE";
+    }
+    //------------------------------------------
+
+    const newBody = {
+      rent: req.body.rent,
+      year: req.body.year,
+      month: req.body.month,
+      rentCycle: req.body.rentCycle,
+      status: newStatus,
+    };
+    //------------------------------------------
+    let monthExists = false;
+
+    {
+      user.dues.rents.map((x) => {
+        if (x.month === month && x.year === year) {
+          monthExists = true;
+        }
+      });
+    }
+    if (monthExists) {
+      return res
+        .status(409)
+        .json({ message: "Already entered for this month" });
+    }
+    //------------------------------------------
+    user.dues.rents.push(newBody);
+    await user.save();
+    res.status(201).json(user);
+  },
+
   //=================== DELETE ====================================
   deleteUser: async (req, res) => {
     const id = req.params.id;

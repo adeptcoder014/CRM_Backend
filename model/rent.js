@@ -14,6 +14,9 @@ const rentSchema = new mongoose.Schema({
   pricePerUnit: {
     type: Number,
   },
+  rentCycle: {
+    type: Number,
+  },
 });
 
 const model = mongoose.model("rent", rentSchema);
