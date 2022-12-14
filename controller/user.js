@@ -51,6 +51,8 @@ module.exports = {
       // const days = 30 - userById.registeredDate.toString().split(" ")[2];
       //-----------------------------------
       res.json({
+        id: userById._id,
+
         name: userById.name,
         dob: userById.dob,
         email: userById.email,
@@ -137,7 +139,7 @@ module.exports = {
       });
     }
   },
-  //=================== DELETE ====================================
+  //=================== POST_RENT ====================================
   postRent: async (req, res) => {
     console.log(
       "---------------------------------------------------",
@@ -157,7 +159,7 @@ module.exports = {
       newStatus = "DUE";
     } else if (rent === rentCycle) {
       newStatus = "PAID";
-    }else{
+    } else {
       newStatus = "in-house DUE";
     }
     //------------------------------------------
@@ -188,6 +190,77 @@ module.exports = {
     user.dues.rents.push(newBody);
     await user.save();
     res.status(201).json(user);
+  },
+  //=================== GET_RENT_BY_ID ====================================
+  getRentById: async (req, res) => {
+    const userId = req.body.userId;
+    const rentId = req.params.id;
+    const user = await model.findById(userId);
+
+    {
+      user.dues.rents.filter((x) => {
+        if (x.id === rentId) {
+          return res.status(200).json({ rent: x });
+        }
+      });
+    }
+  },
+
+  //=================== PATCH_RENT_BY_ID ====================================
+
+  patchRentById: async (req, res) => {
+    const rentId = req.params.id;
+    const newRent = req.body.data;
+    const userId = req.body.userId;
+    const user = await model.findById(userId);
+    // console.log("----------------------->", );
+
+    let foundRent = {
+      rent: 0,
+      year: 0,
+      month: "",
+    };
+
+    {
+      user.dues.rents.filter(async (x) => {
+        if (x.id === rentId) {
+          x.rent = newRent.rent;
+          x.month = newRent.month;
+          x.year = newRent.year;
+          x.rentCycle = x.rentCycle;
+          x.status = x.rent < x.rentCycle ? "DUE" : "PAID";
+        }
+      });
+    }
+    await user.save();
+    res.status(201).json("Ho gaya");
+  },
+
+  //=================== POST_EBILLS ====================================
+
+  postEbill: async (req, res) => {
+    axios.get("http://localhost:5000/rent").then(async (ress) => {
+      let pricePerUnit = ress.data.data[0].pricePerUnit;
+      console.log("pricePerUnit --->", pricePerUnit);
+
+      //---------------------------------------------------
+
+      const userId = req.params.id;
+
+      const initialReading = req.body.initialReading;
+      const newReading = req.body.reading;
+
+      const total = (newReading - initialReading) * pricePerUnit;
+      const user = await model.findById(userId);
+
+      user.dues.eBills.push({
+        reading: newReading,
+        pricePerUnit: pricePerUnit,
+        total: total,
+      });
+      await user.save();
+      res.status(201).json(user)
+    });
   },
 
   //=================== DELETE ====================================

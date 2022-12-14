@@ -7,6 +7,9 @@ router.get("/list",controller.getUser);
 router.get("/:id", controller.getById);
 router.patch("/approval/:id", controller.patchUser);
 router.post("/rent/:id", controller.postRent);
+router.post("/get-rent/:id", controller.getRentById);
+router.patch("/rent/:id", controller.patchRentById);
+router.post("/ebill/:id", controller.postEbill);
 
 router.delete("/:id", controller.deleteUser);
 //---------------------------------------------------
