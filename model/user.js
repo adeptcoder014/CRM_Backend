@@ -55,18 +55,27 @@ const userSchema = new mongoose.Schema({
           status: String,
           rent: Number,
           rentCycle: Number,
+          eBills: {
+            reading: Number,
+            pricePerUnit: Number,
+          },
+          due: {
+            rentDue: Number,
+            ebillDue: Number,
+            total: Number,
+          },
         }),
       },
     ],
-    eBills: [
-      {
-        type: new mongoose.Schema({
-          reading: Number,
-          pricePerUnit: Number,
-          total: Number,
-        }),
-      },
-    ],
+    // eBills: [
+    //   {
+    //     type: new mongoose.Schema({
+    //       reading: Number,
+    //       pricePerUnit: Number,
+    //       total: Number,
+    //     }),
+    //   },
+    // ],
   },
   misc: {
     type: Number,

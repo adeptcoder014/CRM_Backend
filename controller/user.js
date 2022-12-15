@@ -1,6 +1,7 @@
 const model = require("../model/user");
 const zodiac = require("zodiac-signs")("en");
 const axios = require("axios");
+const dayjs = require("dayjs");
 module.exports = {
   //===============  GET_ALL ====================================
   getUser: async (req, res) => {
@@ -51,7 +52,7 @@ module.exports = {
       // const days = 30 - userById.registeredDate.toString().split(" ")[2];
       //-----------------------------------
       res.json({
-        id: userById._id,
+        id: userById.id ? userById.id : userById._id,
 
         name: userById.name,
         dob: userById.dob,
@@ -103,7 +104,15 @@ module.exports = {
   },
   //=================== PATCH ====================================
   patchUser: async (req, res) => {
+    // console.log("------>",)
+
+    const daysLeft =
+      30 - dayjs(req.body.joiningDate).format("DD MM YYYY").split(" ")[0];
+    const rentLeft = daysLeft * 150;
     const id = req.params.id;
+    //--------------------
+    // let rent =
+    //-------------------
     const newBody = {
       name: req.body.name,
       email: req.body.email,
@@ -113,17 +122,31 @@ module.exports = {
       registeredDate: req.body.registeredDate,
       joiningDate: req.body.joiningDate,
 
-      discount: req.body.discount,
       meterReading: req.body.meterReading,
       room: req.body.room,
-      dues: req.body.dues,
-      eBills: req.body.eBills,
-
-      misc: req.body.misc,
 
       remark: req.body.remark,
       security: req.body.security,
       status: "REGISTERED",
+      dues: {
+        rents: [
+          {
+            year: 2022,
+            month: "December",
+            rentCycle: req.body.security,
+            rent: rentLeft,
+            status: "DUE",
+            eBills: {
+              reading: req.body.meterReading,
+              pricePerUnit: 7,
+            },
+            due: {
+              rentDue: rentLeft,
+              ebillDue: 0,
+            },
+          },
+        ],
+      },
     };
     try {
       const updatedUser = await model.findByIdAndUpdate(id, newBody);
@@ -141,26 +164,40 @@ module.exports = {
   },
   //=================== POST_RENT ====================================
   postRent: async (req, res) => {
-    console.log(
-      "---------------------------------------------------",
-      req.body
-    );
+    // console.log("------------------>", req.body);
+
     const user = await model.findById(req.params.id);
-    const month = req.body.month;
-    const year = req.body.year;
+
     const rent = req.body.rent;
-
+    const year = req.body.year;
+    const month = req.body.month;
     const rentCycle = req.body.rentCycle;
-    //------------------------------------------
+    const reading = req.body.reading;
+    // const initialReading = req.body.initialReading;
 
+    //---------------
+    // console.log("-->", );
+
+    const lastMeterReading = user.dues.rents.at(-1).eBills.reading;
+
+    const readingLeft = reading - lastMeterReading;
+
+    // return;
+
+    //---------------
     let newStatus = "";
+    let dueRent = 0;
+    let dueEbill = 0;
 
-    if (rent < rentCycle) {
+    //---------------
+    dueEbill = readingLeft * 7;
+    dueRent = rentCycle - rent;
+    if (!rentCycle - rent && dueEbill !== 0) {
       newStatus = "DUE";
-    } else if (rent === rentCycle) {
+    } else if (rentCycle - rent && dueEbill === 0) {
       newStatus = "PAID";
-    } else {
-      newStatus = "in-house DUE";
+    } else if (dueEbill !== 0) {
+      newStatus = "DUE";
     }
     //------------------------------------------
 
@@ -170,6 +207,15 @@ module.exports = {
       month: req.body.month,
       rentCycle: req.body.rentCycle,
       status: newStatus,
+      eBills: {
+        reading: reading,
+        pricePerUnit: 7,
+      },
+      due: {
+        rentDue: dueRent,
+        ebillDue: dueEbill,
+        total: dueRent + dueEbill,
+      },
     };
     //------------------------------------------
     let monthExists = false;
@@ -192,6 +238,16 @@ module.exports = {
     res.status(201).json(user);
   },
   //=================== GET_RENT_BY_ID ====================================
+
+  getRentsOfUser: async (req, res) => {
+    // console.log();
+
+    const user = await model.findById(req.params.id);
+
+    res.status(200).json(user.dues.rents);
+  },
+
+  //=================== GET_RENT_BY_ID ====================================
   getRentById: async (req, res) => {
     const userId = req.body.userId;
     const rentId = req.params.id;
@@ -213,22 +269,23 @@ module.exports = {
     const newRent = req.body.data;
     const userId = req.body.userId;
     const user = await model.findById(userId);
-    // console.log("----------------------->", );
-
-    let foundRent = {
-      rent: 0,
-      year: 0,
-      month: "",
-    };
-
+    console.log("----------------------->", req.body);
+    return;
     {
-      user.dues.rents.filter(async (x) => {
+      user?.dues?.rents.filter(async (x) => {
         if (x.id === rentId) {
-          x.rent = newRent.rent;
-          x.month = newRent.month;
-          x.year = newRent.year;
-          x.rentCycle = x.rentCycle;
-          x.status = x.rent < x.rentCycle ? "DUE" : "PAID";
+          return (
+            (x.due = {
+              rentDue: newRent.rentCycle - x.rent - newRent.due.rentDue,
+              ebillDue: newRent.due.ebillDue,
+              total: newRent.due.rentDue + newRent.due.ebillDue,
+            }),
+            (x.rent = newRent.rent + newRent.due.rentDue),
+            (x.month = newRent.month),
+            (x.year = newRent.year),
+            (x.rentCycle = x.rentCycle),
+            (x.status = x.due.rentDue - x.due.ebillDue === 0 ? "PAID" : "DUE")
+          );
         }
       });
     }
@@ -253,13 +310,20 @@ module.exports = {
       const total = (newReading - initialReading) * pricePerUnit;
       const user = await model.findById(userId);
 
-      user.dues.eBills.push({
-        reading: newReading,
-        pricePerUnit: pricePerUnit,
-        total: total,
+      // user.dues.rents.push({
+      //   reading: newReading,
+      //   pricePerUnit: pricePerUnit,
+      //   total: total,
+      // });
+      user.dues.rents.push({
+        eBills: {
+          reading: newReading,
+          pricePerUnit: pricePerUnit,
+          total: total,
+        },
       });
       await user.save();
-      res.status(201).json(user)
+      res.status(201).json(user);
     });
   },
 

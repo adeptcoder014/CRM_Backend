@@ -5,6 +5,8 @@ const controller = require("../controller/user");
 router.post("/", controller.getFilteredUser);
 router.get("/list",controller.getUser);
 router.get("/:id", controller.getById);
+router.get("/get-rents/:id", controller.getRentsOfUser);
+
 router.patch("/approval/:id", controller.patchUser);
 router.post("/rent/:id", controller.postRent);
 router.post("/get-rent/:id", controller.getRentById);
