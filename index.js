@@ -33,7 +33,6 @@ app.use("/rent", rent);
 // app.use("/x", require("./routes/x"))
 app.use("/admin", admin);
 app.use("/admin/login", adminLogin);
-app.use("/array", require("./routes/array"))
 app.use("/uploads", express.static("uploads"));
 //===================================================
 app.listen(process.env.PORT, () => {

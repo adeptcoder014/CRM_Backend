@@ -267,25 +267,24 @@ module.exports = {
   patchRentById: async (req, res) => {
     const rentId = req.params.id;
     const newRent = req.body.data;
+
+    //------------ GETTING_USER --------------------
     const userId = req.body.userId;
     const user = await model.findById(userId);
-    console.log("----------------------->", req.body);
-    return;
+    //------------------------------------------
+
+    console.log("----------------------->", newRent);
+    // return;
     {
       user?.dues?.rents.filter(async (x) => {
         if (x.id === rentId) {
-          return (
-            (x.due = {
-              rentDue: newRent.rentCycle - x.rent - newRent.due.rentDue,
-              ebillDue: newRent.due.ebillDue,
-              total: newRent.due.rentDue + newRent.due.ebillDue,
-            }),
-            (x.rent = newRent.rent + newRent.due.rentDue),
-            (x.month = newRent.month),
-            (x.year = newRent.year),
-            (x.rentCycle = x.rentCycle),
-            (x.status = x.due.rentDue - x.due.ebillDue === 0 ? "PAID" : "DUE")
+          x.due.rentDue = x.due.rentDue - newRent.due.rentDue;
+          x.rent = x.rent + newRent.due.rentDue;
+          x.due.ebillDue = x.due.ebillDue - newRent.due.ebillDue;
+          x.due.total = Math.abs(
+            Math.abs(x.due.total - newRent.due.rentDue) - newRent.due.ebillDue
           );
+          x.status = x.due.total === 0 ? "PAID" : "DUE";
         }
       });
     }
