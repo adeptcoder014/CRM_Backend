@@ -288,21 +288,14 @@ module.exports = {
     const firstRentId = user?.dues?.rents[0].id;
     // return;
 
+    let isFirst = false;
+
     {
       user?.dues?.rents.filter(async (x) => {
-        // if (x.id === rentId && rentId === firstRentId) return;
-
-        // {
-        //   x.due.rentDue = x.due.rentDue - newRent.due.rentDue;
-        //   x.rent = x.rent;
-        //   x.due.ebillDue = x.due.ebillDue - newRent.due.ebillDue;
-        //   x.due.total = Math.abs(
-        //     Math.abs(x.due.total - newRent.due.rentDue) - newRent.due.ebillDue
-        //   );
-        //   x.status = x.due.total === 0 ? "PAID" : "DUE";
-        //   admin.editedRents.push(x);
-        // }
-        if (x.id === rentId) {
+     
+        if (rentId  ===  x.id && rentId === firstRentId) {
+          return (isFirst = true);
+        } else if (x.id === rentId && rentId !== firstRentId) {
           x.due.rentDue = x.due.rentDue - newRent.due.rentDue;
           x.rent = x.rent + newRent.due.rentDue;
           x.due.ebillDue = x.due.ebillDue - newRent.due.ebillDue;
@@ -315,6 +308,20 @@ module.exports = {
       });
     }
 
+    if (isFirst) {
+      user?.dues?.rents.filter(async (x) => {
+        if(x.id === firstRentId){
+        x.due.rentDue = x.due.rentDue - newRent.due.rentDue;
+        x.rent = x.rent;
+        x.due.ebillDue = x.due.ebillDue - newRent.due.ebillDue;
+        x.due.total = Math.abs(
+          Math.abs(x.due.total - newRent.due.rentDue) - newRent.due.ebillDue
+        );
+        x.status = x.due.total === 0 ? "PAID" : "DUE";
+        admin.editedRents.push(x);
+    }});
+      // return res.status(500).json("ho gayi chod");
+    }
     try {
       await admin.save();
       await user.save();
