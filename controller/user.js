@@ -292,8 +292,7 @@ module.exports = {
 
     {
       user?.dues?.rents.filter(async (x) => {
-     
-        if (rentId  ===  x.id && rentId === firstRentId) {
+        if (rentId === x.id && rentId === firstRentId) {
           return (isFirst = true);
         } else if (x.id === rentId && rentId !== firstRentId) {
           x.due.rentDue = x.due.rentDue - newRent.due.rentDue;
@@ -303,23 +302,29 @@ module.exports = {
             Math.abs(x.due.total - newRent.due.rentDue) - newRent.due.ebillDue
           );
           x.status = x.due.total === 0 ? "PAID" : "DUE";
-          admin.editedRents.push(x);
+          admin.editedRents.push({
+            rentId: x.id,
+            rentDue: x.due.rentDue,
+            ebillDue: x.due.ebillDue,
+            rent: x.rent,
+          });
         }
       });
     }
 
     if (isFirst) {
       user?.dues?.rents.filter(async (x) => {
-        if(x.id === firstRentId){
-        x.due.rentDue = x.due.rentDue - newRent.due.rentDue;
-        x.rent = x.rent;
-        x.due.ebillDue = x.due.ebillDue - newRent.due.ebillDue;
-        x.due.total = Math.abs(
-          Math.abs(x.due.total - newRent.due.rentDue) - newRent.due.ebillDue
-        );
-        x.status = x.due.total === 0 ? "PAID" : "DUE";
-        admin.editedRents.push(x);
-    }});
+        if (x.id === firstRentId) {
+          x.due.rentDue = x.due.rentDue - newRent.due.rentDue;
+          x.rent = x.rent;
+          x.due.ebillDue = x.due.ebillDue - newRent.due.ebillDue;
+          x.due.total = Math.abs(
+            Math.abs(x.due.total - newRent.due.rentDue) - newRent.due.ebillDue
+          );
+          x.status = x.due.total === 0 ? "PAID" : "DUE";
+          admin.editedRents.push(x);
+        }
+      });
       // return res.status(500).json("ho gayi chod");
     }
     try {
@@ -340,10 +345,13 @@ module.exports = {
     // console.log("--------------->", );
     const editedRents = [];
     admin.editedRents.filter((x) => {
-      if (x.id === rentId) {
+      if (x.rentId === rentId) {
         editedRents.push({
           when: x.time,
           who: admin.name,
+          rentDue:x.rentDue,
+          ebillDue:x.ebillDue,
+          rent:x.rent
         });
       }
     });

@@ -16,6 +16,15 @@ const adminSchema = new mongoose.Schema({
       rentId: {
         type: String,
       },
+      rentDue: {
+        type: Number,
+      },
+      ebillDue: {
+        type: Number,
+      },
+      rent: {
+        type: Number,
+      },
       time: {
         type: Date,
         default: Date.now,
