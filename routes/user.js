@@ -11,8 +11,9 @@ router.patch("/approval/:id", controller.patchUser);
 router.post("/rent/:id", controller.postRent);
 router.post("/get-rent/:id", controller.getRentById);
 router.patch("/rent/:id", controller.patchRentById);
-router.post("/ebill/:id", controller.postEbill);
+router.get("/edited-by/:id", controller.getEditedBy);
 
 router.delete("/:id", controller.deleteUser);
 //---------------------------------------------------
 module.exports = router;
+    

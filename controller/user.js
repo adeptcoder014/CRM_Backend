@@ -1,7 +1,9 @@
 const model = require("../model/user");
+const adminModel = require("../model/admin");
 const zodiac = require("zodiac-signs")("en");
 const axios = require("axios");
 const dayjs = require("dayjs");
+//=========================================
 module.exports = {
   //===============  GET_ALL ====================================
   getUser: async (req, res) => {
@@ -143,6 +145,7 @@ module.exports = {
             due: {
               rentDue: rentLeft,
               ebillDue: 0,
+              total: rentLeft,
             },
           },
         ],
@@ -180,8 +183,14 @@ module.exports = {
 
     const lastMeterReading = user.dues.rents.at(-1).eBills.reading;
 
+    const check = reading - lastMeterReading;
     const readingLeft = reading - lastMeterReading;
 
+    if (check === 0) {
+      return res.status(500).json({
+        message: "Chudaoo ebill check kar , ek he reading rakhega ?!",
+      });
+    }
     // return;
 
     //---------------
@@ -271,12 +280,28 @@ module.exports = {
     //------------ GETTING_USER --------------------
     const userId = req.body.userId;
     const user = await model.findById(userId);
+    const adminId = req.header("Admin_User");
+    const admin = await adminModel.findById(adminId);
     //------------------------------------------
 
-    console.log("----------------------->", newRent);
+    // console.log("----------------------->", );
+    const firstRentId = user?.dues?.rents[0].id;
     // return;
+
     {
       user?.dues?.rents.filter(async (x) => {
+        // if (x.id === rentId && rentId === firstRentId) return;
+
+        // {
+        //   x.due.rentDue = x.due.rentDue - newRent.due.rentDue;
+        //   x.rent = x.rent;
+        //   x.due.ebillDue = x.due.ebillDue - newRent.due.ebillDue;
+        //   x.due.total = Math.abs(
+        //     Math.abs(x.due.total - newRent.due.rentDue) - newRent.due.ebillDue
+        //   );
+        //   x.status = x.due.total === 0 ? "PAID" : "DUE";
+        //   admin.editedRents.push(x);
+        // }
         if (x.id === rentId) {
           x.due.rentDue = x.due.rentDue - newRent.due.rentDue;
           x.rent = x.rent + newRent.due.rentDue;
@@ -285,45 +310,37 @@ module.exports = {
             Math.abs(x.due.total - newRent.due.rentDue) - newRent.due.ebillDue
           );
           x.status = x.due.total === 0 ? "PAID" : "DUE";
+          admin.editedRents.push(x);
         }
       });
     }
-    await user.save();
-    res.status(201).json("Ho gaya");
+
+    try {
+      await admin.save();
+      await user.save();
+      res.status(201).json("Ho gaya");
+    } catch (err) {
+      res.status(500).json(err);
+    }
   },
 
-  //=================== POST_EBILLS ====================================
+  //=================== WHO_EDITED_GET_BY_RENTID ====================================
 
-  postEbill: async (req, res) => {
-    axios.get("http://localhost:5000/rent").then(async (ress) => {
-      let pricePerUnit = ress.data.data[0].pricePerUnit;
-      console.log("pricePerUnit --->", pricePerUnit);
-
-      //---------------------------------------------------
-
-      const userId = req.params.id;
-
-      const initialReading = req.body.initialReading;
-      const newReading = req.body.reading;
-
-      const total = (newReading - initialReading) * pricePerUnit;
-      const user = await model.findById(userId);
-
-      // user.dues.rents.push({
-      //   reading: newReading,
-      //   pricePerUnit: pricePerUnit,
-      //   total: total,
-      // });
-      user.dues.rents.push({
-        eBills: {
-          reading: newReading,
-          pricePerUnit: pricePerUnit,
-          total: total,
-        },
-      });
-      await user.save();
-      res.status(201).json(user);
+  getEditedBy: async (req, res) => {
+    const rentId = req.params.id;
+    const adminId = req.header("Admin_User");
+    const admin = await adminModel.findById(adminId);
+    // console.log("--------------->", );
+    const editedRents = [];
+    admin.editedRents.filter((x) => {
+      if (x.id === rentId) {
+        editedRents.push({
+          when: x.time,
+          who: admin.name,
+        });
+      }
     });
+    res.status(200).json(editedRents);
   },
 
   //=================== DELETE ====================================

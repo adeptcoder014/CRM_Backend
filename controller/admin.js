@@ -19,6 +19,24 @@ module.exports = {
       });
     }
   },
+    //===============  GET_BY_ID ====================================
+    getById: async (req, res) => {
+      // console.log("---♋---> ", req.body);
+      const adminId = req.params.id
+  
+      try {
+        const data = await model.findById(adminId);
+        res.status(200).json({
+          status: "Got ✅",
+          data,
+        });
+      } catch (err) {
+        res.status(500).json({
+          status: "Nope ❌",
+          err,
+        });
+      }
+    },
   //=================== POST ====================================
   postAdmin: async (req, res) => {
     // console.log("server-side state--->",req.body)

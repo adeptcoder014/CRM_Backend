@@ -11,6 +11,17 @@ const adminSchema = new mongoose.Schema({
   password: {
     type: String,
   },
+  editedRents: [
+    {
+      rentId: {
+        type: String,
+      },
+      time: {
+        type: Date,
+        default: Date.now,
+      },
+    },
+  ],
 });
 
 const model = mongoose.model("admin", adminSchema);

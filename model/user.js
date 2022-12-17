@@ -61,7 +61,7 @@ const userSchema = new mongoose.Schema({
           },
           due: {
             rentDue: Number,
-            ebillDue: Number,
+            ebillDue: Number, 
             total: Number,
           },
         }),
