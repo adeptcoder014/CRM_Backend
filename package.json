@@ -31,6 +31,7 @@
     "multer": "^1.4.5-lts.1",
     "node-cron": "^3.0.2",
     "nodemon": "^2.0.20",
+    "socket.io": "^4.5.4",
     "zodiac-signs": "^1.1.0"
   }
 }

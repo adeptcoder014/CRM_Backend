@@ -38,7 +38,7 @@ module.exports = {
       if (!validPassword) {
         return res.status(400).send("Incorrect Password");
       } else {
-        const token = jwt.sign({ _id: user }, "0369");
+        const token = jwt.sign({ _id: user.id }, "0369");
         res.header("auth-token", token).json({
           token: token,
         });

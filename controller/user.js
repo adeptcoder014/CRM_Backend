@@ -53,37 +53,39 @@ module.exports = {
       let perDayRent = ress.data.data[0].rentPerDay;
       // const days = 30 - userById.registeredDate.toString().split(" ")[2];
       //-----------------------------------
-      res.json({
-        id: userById.id ? userById.id : userById._id,
 
-        name: userById.name,
-        dob: userById.dob,
-        email: userById.email,
-        remark: userById.remark,
-        phone: userById.phone,
-        security: userById.security,
-        meterReading: userById.meterReading,
-        room: userById.room,
+      if (!userById) {
+        return res.status(404).json({
+          message: "Document not found !",
+        });
+      }
 
-        registeredDate: userById.registeredDate,
-        joiningDate: userById.joiningDate,
+      res.status(200).json({
+        // id: userById._id ? userById._id : userById.id,
+        // id: userById?.id ,
 
-        roomPreference: userById.roomPreference,
-        photo: userById.photo,
-        status: userById.status,
-        dues: userById.dues,
+        name: userById?.name,
+        dob: userById?.dob,
+        email: userById?.email,
+        remark: userById?.remark,
+        phone: userById?.phone,
+        security: userById?.security,
+        meterReading: userById?.meterReading,
+        room: userById?.room,
+
+        registeredDate: userById?.registeredDate,
+        joiningDate: userById?.joiningDate,
+
+        roomPreference: userById?.roomPreference,
+        photo: userById?.photo,
+        status: userById?.status,
+        dues: userById?.dues,
         zodiac: zodiac.getSignByDate({
-          day: userById.dob.split("-")[2],
-          month: userById.dob.split("-")[1],
+          day: userById?.dob.split("-")[2],
+          month: userById?.dob.split("-")[1],
         }),
       });
     });
-
-    if (!userById) {
-      return res.status(404).json({
-        message: "Document not found !",
-      });
-    }
 
     // res.json({
     //   name: userById.name,
@@ -263,7 +265,7 @@ module.exports = {
     const user = await model.findById(userId);
 
     {
-      user.dues.rents.filter((x) => {
+      user?.dues?.rents?.filter((x) => {
         if (x.id === rentId) {
           return res.status(200).json({ rent: x });
         }
@@ -295,6 +297,14 @@ module.exports = {
         if (rentId === x.id && rentId === firstRentId) {
           return (isFirst = true);
         } else if (x.id === rentId && rentId !== firstRentId) {
+          //-------------------------------------------------
+          let totalForAdmin = Math.abs(
+            Math.abs(x.due.total - newRent.due.rentDue) - newRent.due.ebillDue
+          );
+          let rentDueForAdmin = newRent.due.rentDue;
+          let ebillDueForAdmin =  newRent.due.ebillDue;
+          let rentForAdmin = x.rent + newRent.due.rentDue;
+          //-------------------------------------------------
           x.due.rentDue = x.due.rentDue - newRent.due.rentDue;
           x.rent = x.rent + newRent.due.rentDue;
           x.due.ebillDue = x.due.ebillDue - newRent.due.ebillDue;
@@ -304,9 +314,10 @@ module.exports = {
           x.status = x.due.total === 0 ? "PAID" : "DUE";
           admin.editedRents.push({
             rentId: x.id,
-            rentDue: x.due.rentDue,
-            ebillDue: x.due.ebillDue,
-            rent: x.rent,
+            rentDue: rentDueForAdmin,
+            ebillDue: ebillDueForAdmin,
+            total: totalForAdmin,
+            rent: rentForAdmin,
           });
         }
       });
@@ -315,6 +326,14 @@ module.exports = {
     if (isFirst) {
       user?.dues?.rents.filter(async (x) => {
         if (x.id === firstRentId) {
+          //-------------------------------------------------
+          let totalForAdmin = Math.abs(
+            Math.abs(x.due.total - newRent.due.rentDue) - newRent.due.ebillDue
+          );
+          let rentDueForAdmin = x.due.rentDue - newRent.due.rentDue;
+          let ebillDueForAdmin = x.due.ebillDue - newRent.due.ebillDue;
+          let rentForAdmin = x.rent + newRent.due.rentDue;
+          //-------------------------------------------------
           x.due.rentDue = x.due.rentDue - newRent.due.rentDue;
           x.rent = x.rent;
           x.due.ebillDue = x.due.ebillDue - newRent.due.ebillDue;
@@ -322,7 +341,13 @@ module.exports = {
             Math.abs(x.due.total - newRent.due.rentDue) - newRent.due.ebillDue
           );
           x.status = x.due.total === 0 ? "PAID" : "DUE";
-          admin.editedRents.push(x);
+          admin.editedRents.push({
+            rentId: x.id,
+            rentDue: rentDueForAdmin,
+            ebillDue: ebillDueForAdmin,
+            total: totalForAdmin,
+            rent: rentForAdmin,
+          });
         }
       });
       // return res.status(500).json("ho gayi chod");
@@ -349,9 +374,9 @@ module.exports = {
         editedRents.push({
           when: x.time,
           who: admin.name,
-          rentDue:x.rentDue,
-          ebillDue:x.ebillDue,
-          rent:x.rent
+          rentDue: x.rentDue,
+          ebillDue: x.ebillDue,
+          rent: x.rent,
         });
       }
     });

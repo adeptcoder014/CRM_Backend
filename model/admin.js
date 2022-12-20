@@ -25,6 +25,9 @@ const adminSchema = new mongoose.Schema({
       rent: {
         type: Number,
       },
+      total: {
+        type: Number,
+      },
       time: {
         type: Date,
         default: Date.now,
