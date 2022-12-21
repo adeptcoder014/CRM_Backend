@@ -55,6 +55,10 @@ const userSchema = new mongoose.Schema({
           status: String,
           rent: Number,
           rentCycle: Number,
+          mode:{
+            collectedBy:String,
+            transactionId:String
+          },
           eBills: {
             reading: Number,
             pricePerUnit: Number,

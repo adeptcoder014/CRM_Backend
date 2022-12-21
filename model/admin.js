@@ -32,6 +32,10 @@ const adminSchema = new mongoose.Schema({
         type: Date,
         default: Date.now,
       },
+      mode:{
+        collectedBy:String,
+        transactionId:String
+      },
     },
   ],
 });

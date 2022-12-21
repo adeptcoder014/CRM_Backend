@@ -170,6 +170,7 @@ module.exports = {
   //=================== POST_RENT ====================================
   postRent: async (req, res) => {
     // console.log("------------------>", req.body);
+    // return
 
     const user = await model.findById(req.params.id);
 
@@ -178,6 +179,9 @@ module.exports = {
     const month = req.body.month;
     const rentCycle = req.body.rentCycle;
     const reading = req.body.reading;
+    const collectedBy = req.body.collectedBy;
+    const transactionId = req.body.transactionId;
+
     // const initialReading = req.body.initialReading;
 
     //---------------
@@ -226,6 +230,10 @@ module.exports = {
         rentDue: dueRent,
         ebillDue: dueEbill,
         total: dueRent + dueEbill,
+      },
+      mode: {
+        collectedBy: collectedBy,
+        transactionId: transactionId,
       },
     };
     //------------------------------------------
@@ -302,9 +310,11 @@ module.exports = {
             Math.abs(x.due.total - newRent.due.rentDue) - newRent.due.ebillDue
           );
           let rentDueForAdmin = newRent.due.rentDue;
-          let ebillDueForAdmin =  newRent.due.ebillDue;
+          let ebillDueForAdmin = newRent.due.ebillDue;
           let rentForAdmin = x.rent + newRent.due.rentDue;
           //-------------------------------------------------
+          x.mode = newRent.mode;
+
           x.due.rentDue = x.due.rentDue - newRent.due.rentDue;
           x.rent = x.rent + newRent.due.rentDue;
           x.due.ebillDue = x.due.ebillDue - newRent.due.ebillDue;
@@ -312,12 +322,14 @@ module.exports = {
             Math.abs(x.due.total - newRent.due.rentDue) - newRent.due.ebillDue
           );
           x.status = x.due.total === 0 ? "PAID" : "DUE";
-          admin.editedRents.push({
+          admin?.editedRents?.push({
+            
             rentId: x.id,
             rentDue: rentDueForAdmin,
             ebillDue: ebillDueForAdmin,
             total: totalForAdmin,
             rent: rentForAdmin,
+            mode: newRent.mode,
           });
         }
       });
@@ -334,6 +346,8 @@ module.exports = {
           let ebillDueForAdmin = x.due.ebillDue - newRent.due.ebillDue;
           let rentForAdmin = x.rent + newRent.due.rentDue;
           //-------------------------------------------------
+          x.mode = newRent.mode;
+
           x.due.rentDue = x.due.rentDue - newRent.due.rentDue;
           x.rent = x.rent;
           x.due.ebillDue = x.due.ebillDue - newRent.due.ebillDue;
@@ -347,6 +361,7 @@ module.exports = {
             ebillDue: ebillDueForAdmin,
             total: totalForAdmin,
             rent: rentForAdmin,
+            mode: newRent.mode,
           });
         }
       });
