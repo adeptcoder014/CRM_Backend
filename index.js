@@ -9,7 +9,12 @@ const user = require("./routes/user");
 const rent = require("./routes/rent");
 const adminLogin = require("./routes/adminLogin");
 const admin = require("./routes/admin");
+const session = require('express-session');
+
 //====================================================
+
+// Use the session middleware
+
 app.use(
   cors({
     origin: "*",
@@ -22,7 +27,7 @@ app.use(
   })
 );
 
-//====================================================
+  //====================================================
 app.get("/", (req, res) => {
   res.send("<h1> CRM Server </h1>");
 });
