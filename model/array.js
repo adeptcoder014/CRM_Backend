@@ -3,8 +3,8 @@ const mongoose = require("mongoose");
 //================================
 
 const array = new mongoose.Schema({
-  name: String,
-  friends: [String],
+  type: String,
+  rooms: [Number],
 });
 const model = mongoose.model("array", array);
 
