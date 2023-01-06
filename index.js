@@ -36,6 +36,7 @@ app.use("/register", register);
 app.use("/user", user);
 app.use("/rent", rent);
 app.use("/rooms", require("./routes/rooms"))
+app.use("/notice", require("./routes/notice"))
 app.use("/admin", admin);
 app.use("/admin/login", adminLogin);
 app.use("/uploads", express.static("uploads"));
