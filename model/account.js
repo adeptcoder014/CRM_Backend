@@ -7,9 +7,8 @@ const accountDebitHeads = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-  credit: Number,
   debit: Number,
 });
-const model = mongoose.model("accountDebitHeads", accountDebitHeads);
+const accountModel = mongoose.model("accountDebitHeads", accountDebitHeads);
 
-module.exports = model;
+module.exports = accountModel;

@@ -4,6 +4,8 @@ const controller = require("../controller/account");
 //==========================================
 router.get("/", controller.getAccount);
 router.post("/", controller.postAccountHeadsDebits);
+router.get("/total", controller.getTotalCredit);
+
 
 
 

@@ -108,14 +108,13 @@ module.exports = {
   },
   //=================== PATCH ====================================
   patchUser: async (req, res) => {
-    // console.log("------>",)
-
     const daysLeft =
       30 - dayjs(req.body.joiningDate).format("DD MM YYYY").split(" ")[0];
     const rentLeft = daysLeft * 150;
     const id = req.params.id;
     //--------------------
     // let rent =
+    // console.log("month ------>", );
     //-------------------
     const newBody = {
       name: req.body.name,
@@ -135,8 +134,12 @@ module.exports = {
       dues: {
         rents: [
           {
-            year: 2022,
-            month: "December",
+            year: dayjs(req.body.joiningDate)
+              .format("DD MM YYYY")
+              .split(" ")[2],
+            month: dayjs(req.body.joiningDate)
+              .format("DD MM YYYY")
+              .split(" ")[1],
             rentCycle: req.body.security,
             rent: rentLeft,
             status: "DUE",
@@ -153,6 +156,8 @@ module.exports = {
         ],
       },
     };
+
+    
     try {
       const updatedUser = await model.findByIdAndUpdate(id, newBody);
 
@@ -188,15 +193,28 @@ module.exports = {
     // console.log("-->", );
 
     const lastMeterReading = user.dues.rents.at(-1).eBills.reading;
+    const lastMonth = user.dues.rents.at(-1).month;
+    const lastYear = user.dues.rents.at(-1).year;
 
-    const check = reading - lastMeterReading;
+
+    const meterCheck = reading - lastMeterReading;
     const readingLeft = reading - lastMeterReading;
 
-    if (check === 0) {
+    if (meterCheck === 0) {
       return res.status(500).json({
-        message: "Chudaoo ebill check kar , ek he reading rakhega ?!",
+        message: "Meter reading entered is same as the previous one !!",
       });
     }
+    if (lastMonth === req.body.month ) {
+      return res.status(500).json({
+        message: "Already entered for this month !!",
+      });
+    }
+    // if (lastMonth === req.body.month && lastYear === req.body.year  ) {
+    //   return res.status(500).json({
+    //     message: "Already entered for this month and the year, please search !!",
+    //   });
+    // }
     // return;
 
     //---------------
@@ -323,7 +341,6 @@ module.exports = {
           );
           x.status = x.due.total === 0 ? "PAID" : "DUE";
           admin?.editedRents?.push({
-            
             rentId: x.id,
             rentDue: rentDueForAdmin,
             ebillDue: ebillDueForAdmin,

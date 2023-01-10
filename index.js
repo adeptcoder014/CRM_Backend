@@ -38,6 +38,7 @@ app.use("/rent", rent);
 app.use("/rooms", require("./routes/rooms"))
 app.use("/notice", require("./routes/notice"))
 app.use("/account", require("./routes/account"))
+app.use("/dashboard", require("./routes/dashboard"))
 app.use("/admin", admin);
 app.use("/admin/login", adminLogin);
 app.use("/uploads", express.static("uploads"));
@@ -45,4 +46,3 @@ app.use("/uploads", express.static("uploads"));
 app.listen(process.env.PORT, () => {
   console.log(`Server started on PORT : ${process.env.PORT}`);
 });
-  
