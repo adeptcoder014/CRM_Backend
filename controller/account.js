@@ -1,3 +1,4 @@
+const dayjs = require("dayjs");
 const accountModel = require("../model/account");
 const model = require("../model/user");
 //==================================================
@@ -46,7 +47,24 @@ module.exports = {
       length,
       due,
       totalCredit,
-      totalDebit
+      totalDebit,
     });
+  },
+  //===================== SORTING_ACCOUNT =========================================
+  sortAccount: async (req, res) => {
+    const date = req.query.date;
+    let check = false;
+    const usersData = await accountModel.find({});
+    let sortedData = usersData.filter((x) => {
+      const formattedDate = dayjs(x.time).format("YYYY-MM-DD");
+
+      if (formattedDate === date) {
+        console.log("YES -------------------------------------");
+        return x;
+      }
+    });
+
+ 
+    res.status(200).json(sortedData);
   },
 };
