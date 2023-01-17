@@ -24,7 +24,8 @@ module.exports = {
       res.status(406).send("Email already registered");
       return;
     }
-    // console.log("<<-==================>", req.file)
+    console.log("<<-==================>", req.body)
+    // return
     try {
       const user = new model({
         name: req.body.name,

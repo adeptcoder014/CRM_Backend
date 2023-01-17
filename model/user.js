@@ -17,6 +17,9 @@ const userSchema = new mongoose.Schema({
   photo: {
     type: String,
   },
+  profilePhoto: {
+    type: String,
+  },
   roomPreference: {
     type: String,
   },
@@ -55,9 +58,9 @@ const userSchema = new mongoose.Schema({
           status: String,
           rent: Number,
           rentCycle: Number,
-          mode:{
-            collectedBy:String,
-            transactionId:String
+          mode: {
+            collectedBy: String,
+            transactionId: String,
           },
           eBills: {
             reading: Number,
@@ -65,7 +68,7 @@ const userSchema = new mongoose.Schema({
           },
           due: {
             rentDue: Number,
-            ebillDue: Number, 
+            ebillDue: Number,
             total: Number,
           },
         }),

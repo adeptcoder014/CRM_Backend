@@ -157,7 +157,6 @@ module.exports = {
       },
     };
 
-    
     try {
       const updatedUser = await model.findByIdAndUpdate(id, newBody);
 
@@ -196,7 +195,6 @@ module.exports = {
     const lastMonth = user.dues.rents.at(-1).month;
     const lastYear = user.dues.rents.at(-1).year;
 
-
     const meterCheck = reading - lastMeterReading;
     const readingLeft = reading - lastMeterReading;
 
@@ -205,7 +203,7 @@ module.exports = {
         message: "Meter reading entered is same as the previous one !!",
       });
     }
-    if (lastMonth === req.body.month ) {
+    if (lastMonth === req.body.month) {
       return res.status(500).json({
         message: "Already entered for this month !!",
       });
@@ -423,5 +421,43 @@ module.exports = {
       status: "Deleted 😊",
       deletedUser,
     });
+  },
+
+  //=================== LOGIN_USER ====================================
+  loginUser: async (req, res) => {
+    const userData = await model.find({ phone: req.body.phone });
+    const hai = userData[0].status;
+
+    let check = false;
+    if (userData && hai === "NEW") {
+      check = true;
+    }
+
+    if (check) {      
+      return res.status(404).json("You are not yet apporoved by the admin");
+    }
+    res.status(200).json(userData);
+  },
+  //=================== USER_PROFILE ====================================
+
+  userProfile: async (req, res) => {
+    console.log("-------", req.body);
+    // console.log("-------", req.file);
+    res.status(201).json("hua ?");
+    return;
+    try {
+      const userData = await model.findByIdAndUpdate(req.params.userId, {
+        name: req.body.name,
+        email: req.body.email,
+        phone: req.body.phone,
+        profilePhoto: req.body.photo,
+      });
+
+      res.status(201).json({
+        userData,
+      });
+    } catch (err) {
+      res.status(500).json(err.message);
+    }
   },
 };
