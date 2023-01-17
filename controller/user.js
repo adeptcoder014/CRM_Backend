@@ -442,7 +442,7 @@ module.exports = {
 
   userProfile: async (req, res) => {
     console.log("-------", req.body);
-    // console.log("-------", req.file);
+    console.log("-------", req.file);
     res.status(201).json("hua ?");
     return;
     try {
@@ -460,4 +460,9 @@ module.exports = {
       res.status(500).json(err.message);
     }
   },
+  //=================== USER_SEARCH ====================================
+
+  searchUser :async(req,res) =>{
+    console.log(req.query)
+  }
 };

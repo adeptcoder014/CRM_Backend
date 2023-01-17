@@ -18,6 +18,8 @@ router.get("/edited-by/:id", controller.getEditedBy);
 router.delete("/:id", controller.deleteUser);
 router.post("/login", controller.loginUser);
 router.post("/profile", controller.userProfile);
+router.get("/search", controller.searchUser);
+
 
 
 //---------------------------------------------------
