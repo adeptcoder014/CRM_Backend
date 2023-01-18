@@ -25,22 +25,12 @@ module.exports = {
     // console.log("---♋---> ", req.body);
 
     try {
-      if (req.body.filter) {
-        const user = await model.find({ status: req.body.filter });
-        res.status(200).json({
-          status: "Got ✅",
-          user,
-        });
-      } else {
-        const user = await model.find();
-        res.status(200).json({
-          status: "Got ✅",
-          user,
-        });
-      }
+      const user = await model.find({ status: req.body.filter });
+      res.status(200).json({
+        user,
+      });
     } catch (err) {
       res.status(500).json({
-        status: "Nope ❌",
         err,
       });
     }
@@ -433,10 +423,14 @@ module.exports = {
       check = true;
     }
 
-    if (check) {      
+    if (check) {
       return res.status(404).json("You are not yet apporoved by the admin");
     }
-    res.status(200).json(userData);
+    if (!check) {
+      const token = jwt.sign({ _id: userData[0].id }, "0369");
+
+      res.status(201).json(token);
+    }
   },
   //=================== USER_PROFILE ====================================
 
@@ -462,7 +456,7 @@ module.exports = {
   },
   //=================== USER_SEARCH ====================================
 
-  searchUser :async(req,res) =>{
-    console.log(req.query)
-  }
+  searchUser: async (req, res) => {
+    console.log(req.query);
+  },
 };
