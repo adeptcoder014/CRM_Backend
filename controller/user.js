@@ -3,6 +3,8 @@ const adminModel = require("../model/admin");
 const zodiac = require("zodiac-signs")("en");
 const axios = require("axios");
 const dayjs = require("dayjs");
+const jwt = require("jsonwebtoken");
+
 //=========================================
 module.exports = {
   //===============  GET_ALL ====================================
@@ -415,6 +417,8 @@ module.exports = {
 
   //=================== LOGIN_USER ====================================
   loginUser: async (req, res) => {
+    console.log("===============================================");
+    // return
     const userData = await model.find({ phone: req.body.phone });
     const hai = userData[0].status;
 
@@ -426,10 +430,18 @@ module.exports = {
     if (check) {
       return res.status(404).json("You are not yet apporoved by the admin");
     }
-    if (!check) {
-      const token = jwt.sign({ _id: userData[0].id }, "0369");
+    try {
+      if (!check) {
+        const token =  jwt.sign({ id: userData[0]._id }, "0369");
+  
+        // return res.status(201).json({ token });
+        return res.status(201).json(token);
 
-      res.status(201).json(token);
+      }
+    } catch (error) {
+      res.status(500).json({
+        message: error.message,
+      });
     }
   },
   //=================== USER_PROFILE ====================================
@@ -456,7 +468,32 @@ module.exports = {
   },
   //=================== USER_SEARCH ====================================
 
-  searchUser: async (req, res) => {
-    console.log(req.query);
+  userLogin: async (req, res) => {
+    const userData = await model.find({ phone: req.body.phone });
+
+    const hai = userData[0].status;
+    console.log(userData[0].id);
+
+    let check = false;
+    if (userData && hai === "NEW") {
+      check = true;
+    }
+
+    if (check) {
+      return res.status(404).json("You are not yet apporoved by the admin");
+    }
+    try {
+      if (!check) {
+        const token =  jwt.sign({ id: userData[0].id }, "7860");
+  
+        // return res.status(201).json({ token });
+        return res.status(201).json(token);
+
+      }
+    } catch (error) {
+      res.status(500).json({
+        message: error.message,
+      });
+    }
   },
 };

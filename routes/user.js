@@ -16,9 +16,9 @@ router.patch("/rent/:id", controller.patchRentById);
 router.get("/edited-by/:id", controller.getEditedBy);
 
 router.delete("/:id", controller.deleteUser);
-router.post("/login", controller.loginUser);
+router.post("/login", controller.userLogin);
 router.post("/profile", controller.userProfile);
-router.get("/search", controller.searchUser);
+// router.get("/search", controller.searchUser);
 
 
 
