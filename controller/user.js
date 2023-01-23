@@ -181,16 +181,22 @@ module.exports = {
     // const initialReading = req.body.initialReading;
 
     //---------------
-    // console.log("-->", );
-const  lastMeterReading = user.dues.rents.pop()
+
+    // console.log("======================================", );
+
+    const last = user.dues.rents.slice(-1).pop();
+
+        // console.log("======================================", last);
+
+
+        // return
+    // const lastMeterReading = user.dues.rents.pop();
     // const lastMeterReading = user?.dues?.rents?.at(-1).eBills.reading;
-    const lastMonth = user.dues.rents.pop().month;
-    // const lastYear = user.dues.rents.at(-1).year;
+    const lastMonth = last.month;
+    // const meterCheck = reading - last.eBills.reading;
+    const readingLeft = reading - last.eBills.reading;
 
-    const meterCheck = reading - lastMeterReading.eBills.reading;
-    const readingLeft = reading - lastMeterReading;
-
-    if (meterCheck === 0) {
+    if (readingLeft === 0) {
       return res.status(500).json({
         message: "Meter reading entered is same as the previous one !!",
       });
@@ -432,11 +438,10 @@ const  lastMeterReading = user.dues.rents.pop()
     }
     try {
       if (!check) {
-        const token =  jwt.sign({ id: userData[0]._id }, "0369");
-  
+        const token = jwt.sign({ id: userData[0]._id }, "0369");
+
         // return res.status(201).json({ token });
         return res.status(201).json(token);
-
       }
     } catch (error) {
       res.status(500).json({
@@ -484,11 +489,10 @@ const  lastMeterReading = user.dues.rents.pop()
     }
     try {
       if (!check) {
-        const token =  jwt.sign({ id: userData[0].id }, "7860");
-  
+        const token = jwt.sign({ id: userData[0].id }, "7860");
+
         // return res.status(201).json({ token });
         return res.status(201).json(token);
-
       }
     } catch (error) {
       res.status(500).json({
