@@ -183,7 +183,7 @@ module.exports = {
     //---------------
     // console.log("-->", );
 
-    const lastMeterReading = user.dues.rents.at(-1).eBills.reading;
+    const lastMeterReading = user?.dues?.rents?.at(-1).eBills.reading;
     const lastMonth = user.dues.rents.at(-1).month;
     const lastYear = user.dues.rents.at(-1).year;
 
