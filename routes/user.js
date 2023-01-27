@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const controller = require("../controller/user");
-const upload = require("../middlewares/upload");
+const uploadProfileImage = require("../middlewares/uploadProfileImage");
 
 //======================================================
 router.post("/", controller.getFilteredUser);
@@ -22,7 +22,7 @@ router.get("/edited-by/:id", controller.getEditedBy);
 
 router.delete("/:id", controller.deleteUser);
 router.post("/login", controller.userLogin);
-router.post("/profile", controller.userProfile);
+router.post("/profile/:id",uploadProfileImage.single("profilePhoto"), controller.userProfile);
 
 router.post("/get-imageId", controller.getImageId);
 

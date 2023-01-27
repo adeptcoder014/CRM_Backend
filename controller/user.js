@@ -141,6 +141,8 @@ module.exports = {
 
         roomPreference: userById?.roomPreference,
         photo: userById?.photo,
+        profilePhoto: userById?.profilePhoto,
+
         status: userById?.status,
         dues: userById?.dues,
         zodiac: zodiac.getSignByDate({
@@ -501,17 +503,15 @@ module.exports = {
   //=================== USER_PROFILE ====================================
 
   userProfile: async (req, res) => {
-    console.log("-------", req.body);
-    console.log("-------", req.file);
-    res.status(201).json("hua ?");
-    return;
+    // console.log("-------", req.params.id);
+    // console.log("-------", req.file);
+    
     try {
-      const userData = await model.findByIdAndUpdate(req.params.userId, {
-        name: req.body.name,
-        email: req.body.email,
-        phone: req.body.phone,
-        profilePhoto: req.body.photo,
-      });
+      const userData = await model.findById(req.params.id);
+
+    console.log("-------", userData);
+    return
+
 
       res.status(201).json({
         userData,
