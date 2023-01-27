@@ -5,6 +5,11 @@ const upload = require("../middlewares/upload");
 
 //======================================================
 router.post("/", controller.getFilteredUser);
+router.get("/registered",controller.getRegisteredUser);
+router.get("/new",controller.getNewUser);
+router.get("/tripple",controller.getTrippleUser);
+router.get("/double",controller.getDoubleUser);
+
 router.get("/list",controller.getUser);
 router.get("/:id", controller.getById);
 router.get("/get-rents/:id", controller.getRentsOfUser);
@@ -18,6 +23,9 @@ router.get("/edited-by/:id", controller.getEditedBy);
 router.delete("/:id", controller.deleteUser);
 router.post("/login", controller.userLogin);
 router.post("/profile", controller.userProfile);
+
+router.post("/get-imageId", controller.getImageId);
+
 // router.get("/search", controller.searchUser);
 
 

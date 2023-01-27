@@ -4,9 +4,80 @@ const zodiac = require("zodiac-signs")("en");
 const axios = require("axios");
 const dayjs = require("dayjs");
 const jwt = require("jsonwebtoken");
+const path = require("path");
+const fs = require("fs");
 
 //=========================================
 module.exports = {
+  //===============  GET_NEW_USERS ====================================
+  getNewUser: async (req, res) => {
+    try {
+      const user = await model.find({ status: "NEW" });
+      res.status(200).json({
+        status: "Got ✅",
+        user,
+      });
+    } catch (err) {
+      res.status(500).json({
+        status: "Nope ❌",
+        err,
+      });
+    }
+  },
+  //===============  GET_REGISTERD_USERS ====================================
+  getRegisteredUser: async (req, res) => {
+    try {
+      const user = await model.find({ status: "REGISTERED" });
+      // console.log("================================================",user)
+      res.status(200).json({
+        status: "Got ✅",
+        user,
+      });
+    } catch (err) {
+      res.status(500).json({
+        status: "Nope ❌",
+        err,
+      });
+    }
+  },
+  //===============  GET_Trippple_USERS ====================================
+  getTrippleUser: async (req, res) => {
+    try {
+      const user = await model.find({
+        status: "REGISTERED",
+        roomPreference: "tripple",
+      });
+      // console.log("================================================",user)
+      res.status(200).json({
+        status: "Got ✅",
+        user,
+      });
+    } catch (err) {
+      res.status(500).json({
+        status: "Nope ❌",
+        err,
+      });
+    }
+  },
+  //===============  GET_Doubble_USERS ====================================
+  getDoubleUser: async (req, res) => {
+    try {
+      const user = await model.find({
+        status: "REGISTERED",
+        roomPreference: "double",
+      });
+      // console.log("================================================",user)
+      res.status(200).json({
+        status: "Got ✅",
+        user,
+      });
+    } catch (err) {
+      res.status(500).json({
+        status: "Nope ❌",
+        err,
+      });
+    }
+  },
   //===============  GET_ALL ====================================
   getUser: async (req, res) => {
     try {
@@ -54,7 +125,7 @@ module.exports = {
 
       res.status(200).json({
         // id: userById._id ? userById._id : userById.id,
-        // id: userById?.id ,
+        id: userById?.id,
 
         name: userById?.name,
         dob: userById?.dob,
@@ -165,9 +236,6 @@ module.exports = {
   },
   //=================== POST_RENT ====================================
   postRent: async (req, res) => {
-    // console.log("------------------>", req.body);
-    // return
-
     const user = await model.findById(req.params.id);
 
     const rent = req.body.rent;
@@ -178,22 +246,9 @@ module.exports = {
     const collectedBy = req.body.collectedBy;
     const transactionId = req.body.transactionId;
 
-    // const initialReading = req.body.initialReading;
-
-    //---------------
-
-    // console.log("======================================", );
-
     const last = user.dues.rents.slice(-1).pop();
 
-        // console.log("======================================", last);
-
-
-        // return
-    // const lastMeterReading = user.dues.rents.pop();
-    // const lastMeterReading = user?.dues?.rents?.at(-1).eBills.reading;
     const lastMonth = last.month;
-    // const meterCheck = reading - last.eBills.reading;
     const readingLeft = reading - last.eBills.reading;
 
     if (readingLeft === 0) {
@@ -206,12 +261,6 @@ module.exports = {
         message: "Already entered for this month !!",
       });
     }
-    // if (lastMonth === req.body.month && lastYear === req.body.year  ) {
-    //   return res.status(500).json({
-    //     message: "Already entered for this month and the year, please search !!",
-    //   });
-    // }
-    // return;
 
     //---------------
     let newStatus = "";
@@ -476,6 +525,11 @@ module.exports = {
   userLogin: async (req, res) => {
     const userData = await model.find({ phone: req.body.phone });
 
+    console.log(userData);
+    // return;
+    if (userData === []) {
+      return res.status(404).json("User not registered");
+    }
     const hai = userData[0].status;
     console.log(userData[0].id);
 
@@ -499,5 +553,22 @@ module.exports = {
         message: error.message,
       });
     }
+  },
+  //===========================================
+  getImageId: async (req, res) => {
+    var ID = path.join(__dirname, "../uploads/", req.query.file);
+
+    const filePath = `./uploads/${req.query.file}`;
+
+    const readStream = fs.createReadStream(filePath);
+    // console.log(readStream);
+    readStream.pipe(res);
+    // res.sendFile(readStream);
+
+    // const ID = req.body.image;
+    // res.sendFile(ID, { root: './' })
+
+    // res.sendFile(file);
+    //  const file = path.join( __dirname,`../uploads/${file.split("uploads\\")[1]}`)
   },
 };
