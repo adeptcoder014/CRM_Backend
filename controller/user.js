@@ -240,6 +240,16 @@ module.exports = {
   postRent: async (req, res) => {
     const user = await model.findById(req.params.id);
 
+    // console.log("------------>", req.body.reading);
+
+    // return;
+
+    if (req.body.reading === 0) {
+      return res.status(500).json({
+        message: "Meter reading cannot be zero",
+      });
+    }
+
     const rent = req.body.rent;
     const year = req.body.year;
     const month = req.body.month;
@@ -505,13 +515,12 @@ module.exports = {
   userProfile: async (req, res) => {
     // console.log("-------", req.params.id);
     // console.log("-------", req.file);
-    
+
     try {
       const userData = await model.findById(req.params.id);
 
-    console.log("-------", userData);
-    return
-
+      console.log("-------", userData);
+      return;
 
       res.status(201).json({
         userData,
