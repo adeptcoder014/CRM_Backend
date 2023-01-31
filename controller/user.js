@@ -174,7 +174,8 @@ module.exports = {
   //=================== PATCH ====================================
   patchUser: async (req, res) => {
     const daysLeft =
-      30 - dayjs(req.body.joiningDate).format("DD MM YYYY").split(" ")[0];
+      31 - dayjs(req.body.joiningDate).format("DD MM YYYY").split(" ")[0];
+
     const rentLeft = daysLeft * 150;
     const id = req.params.id;
     //--------------------
