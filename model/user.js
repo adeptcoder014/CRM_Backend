@@ -61,6 +61,8 @@ const userSchema = new mongoose.Schema({
           mode: {
             collectedBy: String,
             transactionId: String,
+            cash: Boolean,
+            online: Boolean,
           },
           eBills: {
             reading: Number,

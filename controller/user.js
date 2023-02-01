@@ -6,6 +6,7 @@ const dayjs = require("dayjs");
 const jwt = require("jsonwebtoken");
 const path = require("path");
 const fs = require("fs");
+const ADMIN_URL = require("../constant");
 
 //=========================================
 module.exports = {
@@ -173,10 +174,20 @@ module.exports = {
   },
   //=================== PATCH ====================================
   patchUser: async (req, res) => {
+    const rents = await axios.get(`${ADMIN_URL}/rent`);
+    const rate = rents.data.data[0];
+
+    // return;
     const daysLeft =
       31 - dayjs(req.body.joiningDate).format("DD MM YYYY").split(" ")[0];
 
-    const rentLeft = daysLeft * 150;
+    const doubleRate = rate.doubble / daysLeft;
+    const trippleRate = rate.tripple / daysLeft;
+
+    const rentLeft =
+      req.body.roomPreference === "double"
+        ? daysLeft * doubleRate
+        : daysLeft * trippleRate;
     const id = req.params.id;
     //--------------------
     // let rent =
@@ -206,7 +217,10 @@ module.exports = {
             month: dayjs(req.body.joiningDate)
               .format("DD MM YYYY")
               .split(" ")[1],
-            rentCycle: req.body.security,
+            rentCycle:
+              req.body.roomPreference === "double"
+                ? rate.doubble
+                : rate.tripple,
             rent: rentLeft,
             status: "DUE",
             eBills: {
@@ -217,6 +231,12 @@ module.exports = {
               rentDue: rentLeft,
               ebillDue: 0,
               total: rentLeft,
+            },
+            mode: {
+              collectedBy: "",
+              transactionId: "transactionId",
+              cash: false,
+              online: false,
             },
           },
         ],
@@ -241,7 +261,7 @@ module.exports = {
   postRent: async (req, res) => {
     const user = await model.findById(req.params.id);
 
-    // console.log("------------>", req.body.reading);
+    // console.log("||------------------------>", req.body);
 
     // return;
 
@@ -310,6 +330,8 @@ module.exports = {
       mode: {
         collectedBy: collectedBy,
         transactionId: transactionId,
+        cash: false,
+        online: false,
       },
     };
     //------------------------------------------
@@ -363,6 +385,20 @@ module.exports = {
     const rentId = req.params.id;
     const newRent = req.body.data;
 
+    console.log("=======================", req.body.data);
+    console.log("======>>", req.body.mode);
+
+    const newMode = {
+      collectedBy:
+        req.body.mode.collectedBy === "None" || req.body.mode === ""
+          ? req.body.data.mode.collectedBy
+          : req.body.mode.collectedBy,
+      transactionId: req.body.data.mode.transactionId,
+      cash: req.body.mode.cash,
+      online: req.body.mode.online,
+    };
+
+    // return;
     //------------ GETTING_USER --------------------
     const userId = req.body.userId;
     const user = await model.findById(userId);
@@ -389,7 +425,8 @@ module.exports = {
           let ebillDueForAdmin = newRent.due.ebillDue;
           let rentForAdmin = x.rent + newRent.due.rentDue;
           //-------------------------------------------------
-          x.mode = newRent.mode;
+          // x.mode = newRent.mode;
+          x.mode = newMode;
 
           x.due.rentDue = x.due.rentDue - newRent.due.rentDue;
           x.rent = x.rent + newRent.due.rentDue;
@@ -404,7 +441,8 @@ module.exports = {
             ebillDue: ebillDueForAdmin,
             total: totalForAdmin,
             rent: rentForAdmin,
-            mode: newRent.mode,
+            // mode: newRent.mode,
+            mode: newMode,
           });
         }
       });
@@ -421,7 +459,8 @@ module.exports = {
           let ebillDueForAdmin = x.due.ebillDue - newRent.due.ebillDue;
           let rentForAdmin = x.rent + newRent.due.rentDue;
           //-------------------------------------------------
-          x.mode = newRent.mode;
+          // x.mode = newRent.mode;
+          x.mode = newMode;
 
           x.due.rentDue = x.due.rentDue - newRent.due.rentDue;
           x.rent = x.rent;
@@ -436,7 +475,8 @@ module.exports = {
             ebillDue: ebillDueForAdmin,
             total: totalForAdmin,
             rent: rentForAdmin,
-            mode: newRent.mode,
+            // mode: newRent.mode,
+            mode: newMode,
           });
         }
       });
@@ -518,10 +558,12 @@ module.exports = {
     // console.log("-------", req.file);
 
     try {
-      const userData = await model.findById(req.params.id);
+      const userData = await model.findByIdAndUpdate(req.params.id, {
+        profilePhoto: req.file.path,
+      });
 
-      console.log("-------", userData);
-      return;
+      // console.log("-------", userData);
+      // return;
 
       res.status(201).json({
         userData,

@@ -35,12 +35,12 @@ app.get("/", (req, res) => {
 app.use("/register", register);
 app.use("/user", user);
 app.use("/rent", rent);
-app.use("/rooms", require("./routes/rooms"))
+// app.use("/rooms", require("./routes/rooms"))
 app.use("/notice", require("./routes/notice"))
 app.use("/account", require("./routes/account"))
 app.use("/dashboard", require("./routes/dashboard"))
 app.use("/admin", admin);
-app.use("/x", require("./routes/x"));
+// app.use("/x", require("./routes/x"));
 
 app.use("/admin/login", adminLogin);
 app.use("/uploads", express.static("uploads"));

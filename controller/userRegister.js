@@ -32,6 +32,8 @@ module.exports = {
         email: req.body.email,
         dob: req.body.dob,
         phone: req.body.phone,
+        security: req.body.roomPreference === 'double' ?  12000 : 10000,
+
         roomPreference: req.body.roomPreference,
         // photo:{
         //   data:req.file.filename,
