@@ -569,7 +569,7 @@ module.exports = {
         userData,
       });
     } catch (err) {
-      res.status(500).json(err.message);
+      res.status(500).json(err);
     }
   },
   //=================== USER_SEARCH ====================================
