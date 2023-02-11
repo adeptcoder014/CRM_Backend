@@ -32,6 +32,9 @@ const userSchema = new mongoose.Schema({
   security: {
     type: Number,
   },
+  enteredRentCyle: {
+    type: Number,
+  },
   remark: {
     type: String,
   },
@@ -53,11 +56,15 @@ const userSchema = new mongoose.Schema({
     rents: [
       {
         type: new mongoose.Schema({
+
           year: Number,
           month: String,
           status: String,
           rent: Number,
           rentCycle: Number,
+          ebillGenerated: Number,
+
+
           mode: {
             collectedBy: String,
             transactionId: String,
@@ -76,15 +83,6 @@ const userSchema = new mongoose.Schema({
         }),
       },
     ],
-    // eBills: [
-    //   {
-    //     type: new mongoose.Schema({
-    //       reading: Number,
-    //       pricePerUnit: Number,
-    //       total: Number,
-    //     }),
-    //   },
-    // ],
   },
   misc: {
     type: Number,

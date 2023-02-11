@@ -42,6 +42,8 @@ app.use("/dashboard", require("./routes/dashboard"))
 app.use("/admin", admin);
 // app.use("/x", require("./routes/x"));
 
+
+
 app.use("/admin/login", adminLogin);
 app.use("/uploads", express.static("uploads"));
 //===================================================

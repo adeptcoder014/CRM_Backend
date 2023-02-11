@@ -174,21 +174,23 @@ module.exports = {
   },
   //=================== PATCH ====================================
   patchUser: async (req, res) => {
+    const adminId = req.header("Admin_User");
+    const admin = await adminModel.findById(adminId);
+
     const rents = await axios.get(`${ADMIN_URL}/rent`);
     const rate = rents.data.data[0];
-
-    // return;
     const daysLeft =
       31 - dayjs(req.body.joiningDate).format("DD MM YYYY").split(" ")[0];
 
-    const doubleRate = rate.doubble / daysLeft;
-    const trippleRate = rate.tripple / daysLeft;
+    const doubleRate = req.body.enteredRentCyle / 30;
+    const trippleRate = req.body.enteredRentCyle / 30;
 
     const rentLeft =
       req.body.roomPreference === "double"
         ? daysLeft * doubleRate
         : daysLeft * trippleRate;
     const id = req.params.id;
+
     //--------------------
     // let rent =
     // console.log("month ------>", );
@@ -217,12 +219,10 @@ module.exports = {
             month: dayjs(req.body.joiningDate)
               .format("DD MM YYYY")
               .split(" ")[1],
-            rentCycle:
-              req.body.roomPreference === "double"
-                ? rate.doubble
-                : rate.tripple,
+            rentCycle: req.body.enteredRentCyle,
             rent: rentLeft,
             status: "DUE",
+            ebillGenerated: 0,
             eBills: {
               reading: req.body.meterReading,
               pricePerUnit: 7,
@@ -243,6 +243,21 @@ module.exports = {
       },
     };
 
+    admin?.editedRents?.push({
+      rentId: "xx-1",
+      rentDue: rentLeft,
+      ebillDue: 0,
+      total: rentLeft,
+      rent: rentLeft,
+      // mode: newRent.mode,
+      mode: {
+        collectedBy: "",
+        transactionId: "transactionId",
+        cash: false,
+        online: false,
+      },
+    });
+
     try {
       const updatedUser = await model.findByIdAndUpdate(id, newBody);
 
@@ -259,7 +274,10 @@ module.exports = {
   },
   //=================== POST_RENT ====================================
   postRent: async (req, res) => {
+    const adminId = req.header("Admin_User");
+
     const user = await model.findById(req.params.id);
+    const admin = await adminModel.findById(adminId);
 
     // console.log("||------------------------>", req.body);
 
@@ -301,7 +319,7 @@ module.exports = {
     let dueEbill = 0;
 
     //---------------
-    dueEbill = readingLeft * 7;
+    dueEbill = readingLeft * 9;
     dueRent = rentCycle - rent;
     if (!rentCycle - rent && dueEbill !== 0) {
       newStatus = "DUE";
@@ -318,6 +336,8 @@ module.exports = {
       month: req.body.month,
       rentCycle: req.body.rentCycle,
       status: newStatus,
+      ebillGenerated: dueEbill,
+
       eBills: {
         reading: reading,
         pricePerUnit: 7,
@@ -334,6 +354,22 @@ module.exports = {
         online: false,
       },
     };
+
+    admin?.editedRents?.push({
+      rentId: "xx-1",
+      rentDue: req.body.rent,
+      ebillDue: 0,
+      total: req.body.rent,
+      rent: req.body.rent,
+      // mode: newRent.mode,
+      mode: {
+        collectedBy: collectedBy,
+        transactionId: transactionId,
+        cash: false,
+        online: false,
+      },
+    });
+
     //------------------------------------------
     let monthExists = false;
 
@@ -352,6 +388,8 @@ module.exports = {
     //------------------------------------------
     user.dues.rents.push(newBody);
     await user.save();
+    await admin.save();
+
     res.status(201).json(user);
   },
   //=================== GET_RENT_BY_ID ====================================
@@ -423,7 +461,9 @@ module.exports = {
           );
           let rentDueForAdmin = newRent.due.rentDue;
           let ebillDueForAdmin = newRent.due.ebillDue;
-          let rentForAdmin = x.rent + newRent.due.rentDue;
+          // let rentForAdmin = x.rent + newRent.due.rentDue; // --> THE_CULPRIT 
+          let rentForAdmin =newRent.due.rentDue;
+
           //-------------------------------------------------
           // x.mode = newRent.mode;
           x.mode = newMode;
@@ -435,6 +475,7 @@ module.exports = {
             Math.abs(x.due.total - newRent.due.rentDue) - newRent.due.ebillDue
           );
           x.status = x.due.total === 0 ? "PAID" : "DUE";
+
           admin?.editedRents?.push({
             rentId: x.id,
             rentDue: rentDueForAdmin,
@@ -608,13 +649,24 @@ module.exports = {
   },
   //===========================================
   getImageId: async (req, res) => {
-    var ID = path.join(__dirname, "../uploads/", req.query.file);
+    // var ID = path.join(__dirname, "../uploads/", req.query.file);
 
-    const filePath = `./uploads/${req.query.file}`;
+    // const filePath = `./uploads/${req.query.file}`;
 
-    const readStream = fs.createReadStream(filePath);
-    // console.log(readStream);
-    readStream.pipe(res);
+    // const readStream = fs.createReadStream(filePath);
+    // // console.log(readStream);
+    // readStream.pipe(res);
+
+    // const fileName = req.params.fileName;
+    // return
+    try {
+      const filePath = path.join(__dirname, "../uploads", req.body.imageUrl);
+      console.log("----------->", filePath);
+
+      res.sendFile(filePath);
+    } catch (error) {
+      res.status(500).json(error);
+    }
     // res.sendFile(readStream);
 
     // const ID = req.body.image;

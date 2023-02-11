@@ -32,17 +32,20 @@ module.exports = {
     let length = 0;
     let due = 0;
     let totalCredit = 0;
+    let ebill = 0;
 
     usersData.map((x) => {
       length = x.dues.rents.length;
       x.dues.rents.map((w) => {
         totalRent = totalRent + w.rent;
-        due = due + w.due.total;
+        ebill = ebill + w.ebillGenerated ;
         totalCredit = totalRent - due;
       });
     });
     //-----------------------------
+
     res.status(200).json({
+      ebill,
       totalRent,
       length,
       due,
@@ -64,7 +67,6 @@ module.exports = {
       }
     });
 
- 
     res.status(200).json(sortedData);
   },
 };
