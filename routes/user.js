@@ -24,7 +24,7 @@ router.delete("/:id", controller.deleteUser);
 router.post("/login", controller.userLogin);
 router.post("/profile/:id",uploadProfileImage.single("profilePhoto"), controller.userProfile);
 
-router.post("/image/:file", controller.getImageId);
+router.post("/image/", controller.getImageId);
 
 
 

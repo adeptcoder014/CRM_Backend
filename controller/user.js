@@ -461,8 +461,8 @@ module.exports = {
           );
           let rentDueForAdmin = newRent.due.rentDue;
           let ebillDueForAdmin = newRent.due.ebillDue;
-          // let rentForAdmin = x.rent + newRent.due.rentDue; // --> THE_CULPRIT 
-          let rentForAdmin =newRent.due.rentDue;
+          // let rentForAdmin = x.rent + newRent.due.rentDue; // --> THE_CULPRIT
+          let rentForAdmin = newRent.due.rentDue;
 
           //-------------------------------------------------
           // x.mode = newRent.mode;
@@ -662,11 +662,14 @@ module.exports = {
     try {
       const filePath = path.join(__dirname, "../uploads", req.body.imageUrl);
       console.log("----------->", filePath);
-
-      res.sendFile(filePath);
+    
+      const imageData = fs.readFileSync(filePath);
+    
+      res.status(200).send({imageData});
     } catch (error) {
       res.status(500).json(error);
     }
+    
     // res.sendFile(readStream);
 
     // const ID = req.body.image;
