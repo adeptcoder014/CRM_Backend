@@ -2,6 +2,9 @@ const bycrypt = require("bcrypt");
 const joi = require("@hapi/joi");
 const model = require("../model/user");
 const multer = require("multer");
+const AWS = require("aws-sdk");
+require("dotenv").config();
+const fs = require("fs");
 
 //========================================
 const registerSchema = joi.object({
@@ -15,7 +18,6 @@ const registerSchema = joi.object({
 //==================== POST ===========================================
 module.exports = {
   post: async (req, res) => {
-    // console.log("Payload --->", req.file);
     const emailExists = await model.findOne({
       email: req.body.email,
     });
@@ -24,31 +26,43 @@ module.exports = {
       res.status(406).send("Email already registered");
       return;
     }
-    console.log("<<-==================>", req.body)
-    // return
+
+    //========= AWS ====================
+    AWS.config.update({
+      accessKeyId: process.env.ACCESS_KEY_ID,
+      secretAccessKey: process.env.SECRET_ACCESS_KEY,
+    });
+
+    const s3 = new AWS.S3();
+    const s3Params = {
+      Bucket: "general-369",
+      Key: `/${req.file.filename}`,
+      Body: fs.createReadStream(req.file.path),
+      ACL: "public-read",
+      ContentType: req.file.mimetype,
+    };
+
+    const uploadPromise = s3.upload(s3Params).promise();
+    let link = await uploadPromise;
+
     try {
       const user = new model({
         name: req.body.name,
         email: req.body.email,
         dob: req.body.dob,
         phone: req.body.phone,
-        security: req.body.roomPreference === 'double' ?  12000 : 10000,
+        security: req.body.roomPreference === "double" ? 12000 : 10000,
 
         roomPreference: req.body.roomPreference,
-        // photo:{
-        //   data:req.file.filename,
-        //   contentType:req.file.mimetype
-        // },
-        photo: req.file.path,
+
+        photo: link.Location,
         status: "NEW",
       });
-      // if (req.file) {
-      //   photo = req.file.path;
-      //   // console.log("<<------->>",req.file);
-      // }
+      // console.log("xxxxxxxxxxxx--->", a.Location);
+      // return;
+
       const { error } = await registerSchema.validateAsync(req.body);
       if (error) {
-        // res.status(400).send(error.details[0].message);
         res.status(400).send(":: Error Hai ::", error);
 
         return;

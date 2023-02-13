@@ -2,8 +2,9 @@ const path = require("path");
 const multer = require("multer");
 //===================================================
 const storage = multer.diskStorage({
-  destination:"uploads",
+  destination: "uploads",
   filename: (req, file, cb) => {
+    // console.log("MULTER ___", file);
     cb(null, file.originalname);
   },
 });
