@@ -498,7 +498,9 @@ module.exports = {
           );
           let rentDueForAdmin = x.due.rentDue - newRent.due.rentDue;
           let ebillDueForAdmin = x.due.ebillDue - newRent.due.ebillDue;
-          let rentForAdmin = x.rent + newRent.due.rentDue;
+          // let rentForAdmin = x.rent + newRent.due.rentDue;
+          let rentForAdmin = newRent.due.rentDue;
+
           //-------------------------------------------------
           // x.mode = newRent.mode;
           x.mode = newMode;
